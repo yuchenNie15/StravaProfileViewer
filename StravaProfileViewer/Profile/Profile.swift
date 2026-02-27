@@ -173,3 +173,13 @@ struct ProfileView: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview("Loaded") {
+    ProfileView(store: Store(initialState: Profile.State(profileData: .dataLoaded(.mock))) {
+        Profile()
+    } withDependencies: {
+        $0.stravaClient = .previewValue
+    })
+}
