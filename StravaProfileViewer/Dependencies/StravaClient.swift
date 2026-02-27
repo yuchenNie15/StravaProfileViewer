@@ -47,6 +47,9 @@ extension StravaClient: DependencyKey {
                     decoder.keyDecodingStrategy = .convertFromSnakeCase
                     decoder.dateDecodingStrategy = .iso8601
                     
+                    print(data)
+                    let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
+                    print(jsonObject)
                     return try decoder.decode(ProfileInfoData.self, from: data)
                 }
                 

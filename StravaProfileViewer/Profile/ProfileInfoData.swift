@@ -9,7 +9,8 @@ import Foundation
 
 public struct ProfileInfoData: Decodable, Sendable, Equatable {
     let id: Int
-    let username: String
+        // Usernames can sometimes be null in Strava
+    let username: String?
     let resourceState: Int
     let firstname: String
     let lastname: String
@@ -23,33 +24,19 @@ public struct ProfileInfoData: Decodable, Sendable, Equatable {
     let badgeTypeId: Int
     let profileMedium: String?
     let profile: String?
-    let followerCount: Int
-    let friendCount: Int
-    let mutualFriendCount: Int
-    let athleteType: Int
+        
+        // MARK: - Optionals
+        // These fields are missing in your JSON response, so they MUST be optional
+    let followerCount: Int?
+    let friendCount: Int?
+    let mutualFriendCount: Int?
+    let athleteType: Int?
     let datePreference: String?
     let measurementPreference: String?
     let ftp: Int?
-    let weight: Double
-    let bikes: [Equipment]
-    let shoes: [Equipment]
-
-    enum CodingKeys: String, CodingKey {
-        case id, username, firstname, lastname, city, state, country, sex, premium
-        case resourceState = "resource_state"
-        case createdAt = "created_at"
-        case updatedAt = "updated_at"
-        case badgeTypeId = "badge_type_id"
-        case profileMedium = "profile_medium"
-        case profile
-        case followerCount = "follower_count"
-        case friendCount = "friend_count"
-        case mutualFriendCount = "mutual_friend_count"
-        case athleteType = "athlete_type"
-        case datePreference = "date_preference"
-        case measurementPreference = "measurement_preference"
-        case ftp, weight, bikes, shoes
-    }
+    let weight: Double?
+    let bikes: [Equipment]?
+    let shoes: [Equipment]?
 }
 
 struct Equipment: Decodable, Sendable, Equatable {
@@ -58,9 +45,4 @@ struct Equipment: Decodable, Sendable, Equatable {
     let name: String
     let resourceState: Int
     let distance: Double
-
-    enum CodingKeys: String, CodingKey {
-        case id, primary, name, distance
-        case resourceState = "resource_state"
-    }
 }

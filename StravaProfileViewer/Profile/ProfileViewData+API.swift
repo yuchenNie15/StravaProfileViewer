@@ -18,12 +18,13 @@ extension ProfileViewData {
         let location = (city.isEmpty || state.isEmpty) ? "\(city)\(state)" : "\(city), \(state)"
         
         let profileImageURL = URL(string: profile.profile ?? "")
-        let followerCount = "\(profile.followerCount)"
-        let followingCount = "\(profile.friendCount)"
+        let followerCount = "\(profile.followerCount ?? 0)"
+        let followingCount = "\(profile.friendCount ?? 0)"
         let isPremium = profile.premium
         
-        let bikes: [GearRowData] = profile.bikes.map { GearRowData.from(gear: $0) }
-        let shoes: [GearRowData] = profile.shoes.map { GearRowData.from(gear: $0) }
+        
+        let bikes: [GearRowData] = profile.bikes?.map { GearRowData.from(gear: $0) } ?? []
+        let shoes: [GearRowData] = profile.shoes?.map { GearRowData.from(gear: $0) } ?? []
         return .init(
             fullName: fullName,
             location: location,
