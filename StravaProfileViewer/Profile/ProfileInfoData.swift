@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ProfileInfoData: Decodable {
+public struct ProfileInfoData: Decodable, Sendable, Equatable {
     let id: Int
     let username: String
     let resourceState: Int
@@ -52,7 +52,7 @@ struct ProfileInfoData: Decodable {
     }
 }
 
-struct Equipment: Decodable {
+struct Equipment: Decodable, Sendable, Equatable {
     let id: String
     let primary: Bool
     let name: String

@@ -11,22 +11,51 @@ import SwiftUI
 
 @Reducer
 struct Profile {
+    @Dependency(\.stravaClient) var stravaClient
+    
     @ObservableState
+    @MainActor
     struct State: Equatable {
         var profileData: ViewDataState<ProfileViewData>
-        
+
         init(profileData: ViewDataState<ProfileViewData> = .loading) {
             self.profileData = profileData
         }
     }
-    
+
     enum Action {
-        case placeholder
+        case onAppear
+        // Updated to use your specific error type
+        case profileResponse(Result<ProfileViewData, DataLoadingError>)
+        case retry
     }
-    
+
     var body: some Reducer<State, Action> {
         Reduce { state, action in
-            return .none
+            switch action {
+            case .onAppear:
+                guard !state.profileData.isDataLoaded else { return .none }
+                state.profileData = .loading
+                return .run { send in
+                    let result = await stravaClient.fetchAthlete()
+                    await send(.profileResponse(result))
+                }
+
+            case .retry:
+                return .run { send in
+                    let result = await stravaClient.fetchAthlete()
+                    await send(.profileResponse(result))
+                }
+
+            case .profileResponse(.success(let profile)):
+                state.profileData = .dataLoaded(profile)
+                return .none
+
+            case .profileResponse(.failure(let error)):
+                // Since the Action now expects DataLoadingError, you can pass it directly
+                state.profileData = .error(error)
+                return .none
+            }
         }
     }
 }
@@ -44,7 +73,7 @@ struct ProfileView: View {
                     dataView(profile: profile)
                 case .error(let error):
                     FullPageErrorView(error: error) {
-                        
+                        store.send(.retry)
                     }
                 case .empty:
                     EmptyView()
@@ -52,6 +81,7 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
         }
+        .task { store.send(.onAppear) }
     }
     
     @ViewBuilder

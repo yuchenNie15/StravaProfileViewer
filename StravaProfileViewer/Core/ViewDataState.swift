@@ -45,7 +45,7 @@ public extension ViewDataState {
 }
 
 
-public enum DataLoadingError: Error, Equatable, LocalizedError {
+public enum DataLoadingError: Error, Equatable, LocalizedError, Sendable {
   case unknown(String)
   case errorWithStatusCode(Int)
   case badResponse(String?)

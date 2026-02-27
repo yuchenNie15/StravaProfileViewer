@@ -10,7 +10,7 @@ import Tagged
 
 extension ProfileViewData {
     // A helper initializer to transform the raw API model
-    static func from(profile: ProfileInfoData) -> Self {
+    nonisolated static func from(profile: ProfileInfoData) -> Self {
         let fullName = "\(profile.firstname) \(profile.lastname)"
         
         let city = profile.city ?? ""
@@ -38,7 +38,7 @@ extension ProfileViewData {
 }
 
 extension ProfileViewData.GearRowData {
-    static func from(gear: Equipment) -> Self {
+    nonisolated static func from(gear: Equipment) -> Self {
         let id = gear.id
         let name = gear.name
         let isPrimary = gear.primary
