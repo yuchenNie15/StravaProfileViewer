@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4CD130CC2F520362000CF4E7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD130CB2F520362000CF4E7 /* ComposableArchitecture */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		4CD130A22F5202C4000CF4E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CD130CC2F520362000CF4E7 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +117,7 @@
 			);
 			name = StravaProfileViewer;
 			packageProductDependencies = (
+				4CD130CB2F520362000CF4E7 /* ComposableArchitecture */,
 			);
 			productName = StravaProfileViewer;
 			productReference = 4CD130942F5202C3000CF4E7 /* StravaProfileViewer.app */;
@@ -195,6 +201,9 @@
 			);
 			mainGroup = 4CD1308B2F5202C3000CF4E7;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				4CD130CA2F520362000CF4E7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4CD130952F5202C3000CF4E7 /* Products */;
 			projectDirPath = "";
@@ -570,6 +579,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		4CD130CA2F520362000CF4E7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.24.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		4CD130CB2F520362000CF4E7 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4CD130CA2F520362000CF4E7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 4CD1308C2F5202C3000CF4E7 /* Project object */;
 }
