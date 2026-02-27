@@ -13,25 +13,133 @@ import SwiftUI
 struct Profile {
     @ObservableState
     struct State: Equatable {
-        var label: String = "Hello, Profile!"
+        var profileData: ViewDataState<ProfileViewData>
+        
+        init(profileData: ViewDataState<ProfileViewData> = .loading) {
+            self.profileData = profileData
+        }
     }
     
-    enum Action: BindableAction { // Add this
-        case binding(BindingAction<State>)
+    enum Action {
         case placeholder
     }
     
     var body: some Reducer<State, Action> {
-        BindingReducer() // Add this to handle bindings automatically
         Reduce { state, action in
             return .none
         }
     }
 }
+
 struct ProfileView: View {
     @Bindable var store: StoreOf<Profile>
     
     var body: some View {
-        Text(store.label)
+        NavigationStack {
+            Group {
+                switch store.profileData {
+                case .loading:
+                    ProgressView()
+                case .dataLoaded(let profile):
+                    dataView(profile: profile)
+                case .error(let error):
+                    FullPageErrorView(error: error) {
+                        
+                    }
+                case .empty:
+                    EmptyView()
+                }
+            }
+            .navigationTitle("Profile")
+        }
+    }
+    
+    @ViewBuilder
+    private func dataView(profile: ProfileViewData) -> some View {
+        List {
+            headerSection(profile)
+            
+            Section("Stats") {
+                HStack {
+                    Label("\(profile.followerCount) Followers", systemImage: "person.2")
+                    Spacer()
+                    Label("\(profile.followingCount) Following", systemImage: "person.badge.plus")
+                }
+                .font(.subheadline)
+            }
+            
+            if !profile.bikes.isEmpty {
+                Section("Bikes") {
+                    ForEach(profile.bikes) { bike in
+                        gearRow(bike, icon: "bicycle")
+                    }
+                }
+            }
+            
+            if !profile.shoes.isEmpty {
+                Section("Shoes") {
+                    ForEach(profile.shoes) { shoe in
+                        gearRow(shoe, icon: "shoeprints.fill")
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Subviews
+    private func headerSection(_ profile: ProfileViewData) -> some View {
+        VStack(spacing: 12) {
+            AsyncImage(url: profile.profileImageURL) { image in
+                image.resizable().aspectRatio(contentMode: .fill)
+            } placeholder: {
+                Circle().fill(Color.gray.opacity(0.2))
+            }
+            .frame(width: 100, height: 100)
+            .clipShape(Circle())
+            .overlay(Circle().stroke(Color.orange, lineWidth: 2))
+            
+            VStack {
+                Text(profile.fullName)
+                    .font(.title2).bold()
+                
+                Text(profile.location)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+            
+            if profile.isPremium {
+                Text("PREMIUM")
+                    .font(.caption2).bold()
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.orange.opacity(0.2))
+                    .foregroundStyle(.orange)
+                    .cornerRadius(4)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .listRowBackground(Color.clear)
+    }
+    
+    private func gearRow(_ gear: ProfileViewData.GearRowData, icon: String) -> some View {
+        HStack {
+            Image(systemName: icon)
+                .foregroundStyle(.orange)
+                .frame(width: 30)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(gear.name)
+                Text(gear.distanceDisplay)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            Spacer()
+            if gear.isPrimary {
+                Text("Primary")
+                    .font(.caption)
+                    .padding(4)
+                    .background(Color.secondary.opacity(0.1))
+                    .cornerRadius(4)
+            }
+        }
     }
 }

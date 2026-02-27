@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		4CD130CC2F520362000CF4E7 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD130CB2F520362000CF4E7 /* ComposableArchitecture */; };
+		4CD131022F5247AF000CF4E7 /* Tagged in Frameworks */ = {isa = PBXBuildFile; productRef = 4CD131012F5247AF000CF4E7 /* Tagged */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4CD131022F5247AF000CF4E7 /* Tagged in Frameworks */,
 				4CD130CC2F520362000CF4E7 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -118,6 +120,7 @@
 			name = StravaProfileViewer;
 			packageProductDependencies = (
 				4CD130CB2F520362000CF4E7 /* ComposableArchitecture */,
+				4CD131012F5247AF000CF4E7 /* Tagged */,
 			);
 			productName = StravaProfileViewer;
 			productReference = 4CD130942F5202C3000CF4E7 /* StravaProfileViewer.app */;
@@ -203,6 +206,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				4CD130CA2F520362000CF4E7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				4CD131002F5247AF000CF4E7 /* XCRemoteSwiftPackageReference "swift-tagged" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4CD130952F5202C3000CF4E7 /* Products */;
@@ -423,7 +427,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -454,7 +458,7 @@
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -589,6 +593,14 @@
 				minimumVersion = 1.24.1;
 			};
 		};
+		4CD131002F5247AF000CF4E7 /* XCRemoteSwiftPackageReference "swift-tagged" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-tagged";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -596,6 +608,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 4CD130CA2F520362000CF4E7 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
+		};
+		4CD131012F5247AF000CF4E7 /* Tagged */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 4CD131002F5247AF000CF4E7 /* XCRemoteSwiftPackageReference "swift-tagged" */;
+			productName = Tagged;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
