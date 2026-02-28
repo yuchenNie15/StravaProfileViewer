@@ -33,7 +33,6 @@ struct ActivityList {
                 if case .dataLoaded = state.activityData { return .none }
                 
                 return .run { [page = state.page] send in
-                    // Use the local 'client' instead of 'stravaClient'
                     let result = await stravaClient.fetchActivities(page)
                     await send(.activitiesResponse(result))
                 }
@@ -92,4 +91,18 @@ struct ActivityListView: View {
         .listStyle(.plain)
         .navigationTitle("Activities")
     }
+}
+
+// MARK: - Previews
+
+#Preview("Loaded") {
+    ActivityListView(store: Store(
+        initialState: ActivityList.State(
+            activityData: .dataLoaded(IdentifiedArray(uniqueElements: ActivityViewData.createMocks()))
+        )
+    ) {
+        ActivityList()
+    } withDependencies: {
+        $0.stravaClient = .previewValue
+    })
 }
