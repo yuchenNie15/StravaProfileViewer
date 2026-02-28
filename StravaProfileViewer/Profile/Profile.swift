@@ -16,16 +16,11 @@ struct Profile {
     @ObservableState
     @MainActor
     struct State: Equatable {
-        var profileData: ViewDataState<ProfileViewData>
-
-        init(profileData: ViewDataState<ProfileViewData> = .loading) {
-            self.profileData = profileData
-        }
+        var profileData: ViewDataState<ProfileViewData> = .loading
     }
 
     enum Action {
         case onAppear
-        // Updated to use your specific error type
         case profileResponse(Result<ProfileViewData, DataLoadingError>)
         case retry
     }
@@ -52,7 +47,6 @@ struct Profile {
                 return .none
 
             case .profileResponse(.failure(let error)):
-                // Since the Action now expects DataLoadingError, you can pass it directly
                 state.profileData = .error(error)
                 return .none
             }
@@ -113,6 +107,8 @@ struct ProfileView: View {
                     }
                 }
             }
+        }.refreshable {
+            store.send(.retry)
         }
     }
     

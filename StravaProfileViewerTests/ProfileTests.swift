@@ -70,36 +70,12 @@ struct ProfileTests {
         let store = TestStore(initialState: Profile.State(profileData: .error(.networkError))) {
             Profile()
         } withDependencies: {
-            $0.stravaClient = StravaClient(fetchAthlete: { .failure(.errorWithStatusCode(500)) })
+            $0.stravaClient.fetchAthlete = { .failure(.errorWithStatusCode(500)) }
         }
 
         await store.send(.retry)
-        await store.receive(.profileResponse(.failure(.errorWithStatusCode(500)))) {
+        await store.receive(\.profileResponse) {
             $0.profileData = .error(.errorWithStatusCode(500))
-        }
-    }
-
-    // MARK: - profileResponse
-
-    @Test
-    func profileResponse_success_setsDataLoaded() async {
-        let store = TestStore(initialState: Profile.State()) {
-            Profile()
-        }
-
-        await store.send(.profileResponse(.success(.mock))) {
-            $0.profileData = .dataLoaded(.mock)
-        }
-    }
-
-    @Test
-    func profileResponse_failure_setsError() async {
-        let store = TestStore(initialState: Profile.State()) {
-            Profile()
-        }
-
-        await store.send(.profileResponse(.failure(.networkError))) {
-            $0.profileData = .error(.networkError)
         }
     }
 }

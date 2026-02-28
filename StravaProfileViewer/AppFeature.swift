@@ -26,14 +26,14 @@ struct AppFeature {
         
         var title: String {
             switch self {
-            case .activities: return "Chats"
+            case .activities: return "Activities"
             case .profile: return "Profile"
             }
         }
         
         var systemImage: String {
             switch self {
-            case .activities: return "message.fill"
+            case .activities: return "bicycle.circle.fill"
             case .profile: return "person.fill"
             }
         }
