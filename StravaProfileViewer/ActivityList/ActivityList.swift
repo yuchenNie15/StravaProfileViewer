@@ -153,6 +153,9 @@ struct ActivityListView: View {
                 }
             }
         }
+        .refreshable {
+            store.send(.retry)
+        }
         .listStyle(.plain)
         .navigationTitle("Activities")
     }
