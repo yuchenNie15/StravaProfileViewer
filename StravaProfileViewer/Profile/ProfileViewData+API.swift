@@ -9,7 +9,6 @@ import Foundation
 import Tagged
 
 extension ProfileViewData {
-    // A helper initializer to transform the raw API model
     nonisolated static func from(profile: ProfileInfoData) -> Self {
         let fullName = "\(profile.firstname) \(profile.lastname)"
         
