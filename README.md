@@ -2,29 +2,40 @@
 
 A SwiftUI app built with [The Composable Architecture (TCA)](https://github.com/pointfreeco/swift-composable-architecture) that displays your Strava athlete profile.
 
-## Getting a Strava Access Token
+## Running the Application
+To get the application running, you must first register it with Strava's developer API.
 
-The app requires a Strava access token to fetch your profile. Since full OAuth is not yet implemented, you can obtain a token manually from the Strava developer portal:
+### Steps for App Registration:
 
-1. Go to [https://www.strava.com/settings/api](https://www.strava.com/settings/api) and create an application (or use an existing one).
-2. Navigate to [https://developers.strava.com/playground](https://developers.strava.com/playground).
-3. Click **Authorize** and grant the `profile:read_all` scope.
-4. After authorizing, the playground will display your **Access Token** in the response.
+1. Navigate to the Strava developer site: https://developers.strava.com/.
+2. Follow the instructions there to create your new App.
 
-## Setting the Token in the App
+### Retrieving API Credentials:
+**Once the app is created:**
+1. Go to your Strava API settings page: https://www.strava.com/settings/api.
+2. Retrieve your Client ID and Client Secret. You may optionally retrieve the Refresh Token as well.
+3. Within the Project, locate the `StravaClientID.swift` file and update the corresponding fields with the values you just retrieved.
 
-Once you have the token, store it in `UserDefaults` before launching the app. The easiest way is to add a one-time call in `StravaProfileViewerApp.swift` during development:
+## Authentication
 
-```swift
-UserDefaults.standard.set("YOUR_ACCESS_TOKEN_HERE", forKey: "strava_access_token")
-```
+Implementing the Strava OAuth flow with the AuthenticationServices framework required significant assistance from AI tools. I utilized Claude to generate the initial version of the Auth Client. 
 
-Remove this line once a proper OAuth flow is in place.
+However, as is often the case with AI-generated code, it wasn't functional initially and necessitated manual debugging to resolve multiple failures from the logs that the Strava API provided. 
 
-> **Note:** Tokens obtained from the Strava playground expire after 6 hours. Repeat the steps above to get a fresh token when needed.
+Furthermore, the first iteration stored the access and refresh tokens in UserDefault storage rather than the more secure keychain.
 
-## Requirements
+## Activities List
 
-- Xcode 16+
-- iOS 18+
-- A Strava account and API application
+The ActivityList uses TCA and SwiftUI for a paginated feed, separating UI state from Strava API side effects. Its State uses an IdentifiedArray for performance, tracking activities, page index, and fetch availability. 
+
+The nextPageLoader manages infinite scrolling, fetching the next page via loadNextPage and appending data. The determineIfNextPageCanBeLoaded helper prevents unnecessary calls when a partial page is returned (less than the pageSize of 30). 
+
+The ActivityListView updates dynamically via a switch statement. Pagination is managed by a ProgressView at the list's end, dispatching loadNextPage on viewport entry via .task. onAppear prevents redundant fetches by only loading if the list is empty.
+
+## Profile
+
+The Profile module, the personal dashboard in StravaProfileViewer, also uses TCA and SwiftUI but focuses on fetching a single, detailed user object. 
+
+The Profile Reducer uses a ViewDataState wrapper for loading/error state management. onAppear initiates an asynchronous fetch via stravaClient, guarded against redundancy. It includes a retry mechanism via a pull-to-refresh. The ProfileView dynamically renders: a ProgressView during initial fetch transitions to a structured List. 
+
+The layout features a header with a circular profile image, name, and location. It details Stats (follower/following counts) and iterates through Bikes and Shoes, showing distance and marking primary equipment. The .refreshable modifier allows users to sync latest data via pull-to-refresh.
