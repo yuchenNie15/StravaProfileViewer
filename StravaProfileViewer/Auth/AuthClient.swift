@@ -58,8 +58,8 @@ extension AuthClient: DependencyKey {
             TokenStore.save(response)
         },
         refreshIfNeeded: {
-            guard TokenStore.isExpired() else { return }
-            let response = try await refreshAccessToken(stravaRefreshToken)
+            guard TokenStore.isExpired(), let refreshToken = TokenStore.refreshToken() else { return }
+            let response = try await refreshAccessToken(refreshToken)
             TokenStore.save(response)
         },
         logout: {
