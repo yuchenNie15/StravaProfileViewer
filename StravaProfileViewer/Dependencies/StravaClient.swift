@@ -67,9 +67,10 @@ extension StravaClient: DependencyKey {
         fetchActivities: { page in
             do {
                 var components = URLComponents(string: "https://www.strava.com/api/v3/athlete/activities")!
+                let pageSize = await ActivityList.pageSize
                 components.queryItems = [
                     URLQueryItem(name: "page", value: "\(page)"),
-                    URLQueryItem(name: "per_page", value: "30")
+                    URLQueryItem(name: "per_page", value: "\(pageSize)")
                 ]
                 var request = URLRequest(url: components.url!)
 
