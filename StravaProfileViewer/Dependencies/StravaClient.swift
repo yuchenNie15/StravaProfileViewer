@@ -21,6 +21,17 @@ extension DependencyValues {
     }
 }
 
+private func validToken() async throws -> String {
+    if TokenStore.isExpired(), let refresh = TokenStore.refreshToken() {
+        let response = try await refreshAccessToken(refresh)
+        TokenStore.save(response)
+    }
+    guard let token = TokenStore.accessToken() else {
+        throw DataLoadingError.unknown("Not authenticated. Please log in.")
+    }
+    return token
+}
+
 extension StravaClient: DependencyKey {
     public static let liveValue = Self(
         fetchAthlete: {
@@ -28,7 +39,7 @@ extension StravaClient: DependencyKey {
                 let url = URL(string: "https://www.strava.com/api/v3/athlete")!
                 var request = URLRequest(url: url)
 
-                let token = await stravaAccessTokenKey
+                let token = try await validToken()
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
                 let (data, response) = try await URLSession.shared.data(for: request)
@@ -62,7 +73,7 @@ extension StravaClient: DependencyKey {
                 ]
                 var request = URLRequest(url: components.url!)
 
-                let token = await stravaAccessTokenKey
+                let token = try await validToken()
                 request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
                 let (data, response) = try await URLSession.shared.data(for: request)
