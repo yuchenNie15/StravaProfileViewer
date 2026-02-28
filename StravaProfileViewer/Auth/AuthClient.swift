@@ -32,7 +32,7 @@ extension AuthClient: DependencyKey {
                     let authURL = buildAuthURL()
                     let session = ASWebAuthenticationSession(
                         url: authURL,
-                        callbackURLScheme: "strava206412"
+                        callbackURLScheme: "strava\(stravaClientID)"
                     ) { callbackURL, error in
                         if let error {
                             continuation.resume(throwing: error)
@@ -58,8 +58,8 @@ extension AuthClient: DependencyKey {
             TokenStore.save(response)
         },
         refreshIfNeeded: {
-            guard TokenStore.isExpired(), let refreshToken = TokenStore.refreshToken() else { return }
-            let response = try await refreshAccessToken(refreshToken)
+            guard TokenStore.isExpired() else { return }
+            let response = try await refreshAccessToken(stravaRefreshToken)
             TokenStore.save(response)
         },
         logout: {
@@ -139,7 +139,7 @@ private func buildAuthURL() -> URL {
     var components = URLComponents(string: "https://www.strava.com/oauth/mobile/authorize")!
     components.queryItems = [
         URLQueryItem(name: "client_id", value: stravaClientID),
-        URLQueryItem(name: "redirect_uri", value: "strava206412://localhost"),
+        URLQueryItem(name: "redirect_uri", value: "strava\(stravaClientID)://localhost"),
         URLQueryItem(name: "response_type", value: "code"),
         URLQueryItem(name: "approval_prompt", value: "auto"),
         URLQueryItem(name: "scope", value: "activity:read_all,profile:read_all"),
