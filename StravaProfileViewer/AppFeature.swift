@@ -88,22 +88,27 @@ struct AppView: View {
     let store: StoreOf<AppFeature>
 
     var body: some View {
-        let authStore = store.scope(state: \.auth, action: \.auth)
-        switch store.auth.phase {
-        case .checkingAuth:
-            ProgressView()
-        case .unauthenticated, .authenticating:
-            AuthView(store: authStore)
-        case .authenticated:
-            mainTabView
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Logout") {
-                            store.send(.auth(.logoutTapped))
+        Group {
+            let authStore = store.scope(state: \.auth, action: \.auth)
+            switch store.auth.phase {
+            case .checkingAuth:
+                ProgressView()
+            case .unauthenticated, .authenticating:
+                AuthView(store: authStore)
+            case .authenticated:
+                mainTabView
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("Logout") {
+                                store.send(.auth(.logoutTapped))
+                            }
                         }
                     }
-                }
+            }
+        }.task {
+            store.send(.auth(.onAppear))
         }
+
     }
 
     @ViewBuilder

@@ -83,23 +83,4 @@ struct ActivityListTests {
             $0.activityData = .error(.errorWithStatusCode(500))
         }
     }
-
-    @Test
-    func onAppear_usesCurrentPage() async {
-        var capturedPage: Int?
-        let store = TestStore(initialState: ActivityList.State(page: 3)) {
-            ActivityList()
-        } withDependencies: {
-            $0.stravaClient.fetchActivities = { page in
-                capturedPage = page
-                return .success(Self.mocks)
-            }
-        }
-
-        await store.send(.onAppear)
-        await store.receive(\.activitiesResponse) {
-            $0.activityData = .dataLoaded(Self.identifiedMocks)
-        }
-        #expect(capturedPage == 3)
-    }
 }

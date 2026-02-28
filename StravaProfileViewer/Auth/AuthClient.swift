@@ -139,7 +139,7 @@ private func buildAuthURL() -> URL {
     var components = URLComponents(string: "https://www.strava.com/oauth/mobile/authorize")!
     components.queryItems = [
         URLQueryItem(name: "client_id", value: stravaClientID),
-        URLQueryItem(name: "redirect_uri", value: "strava206412://auth"),
+        URLQueryItem(name: "redirect_uri", value: "strava206412://localhost"),
         URLQueryItem(name: "response_type", value: "code"),
         URLQueryItem(name: "approval_prompt", value: "auto"),
         URLQueryItem(name: "scope", value: "activity:read_all,profile:read_all"),
