@@ -72,6 +72,7 @@ struct ActivityList {
                     if case .dataLoaded = state.activityData { return .none }
                     return loadInitialActivities()
                 case .retry:
+                    state.page = 1
                     return loadInitialActivities()
                 case .activitiesResponse(.success(let activities)):
                     let identifiedActivities = IdentifiedArray(uniqueElements: activities)
