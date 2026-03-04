@@ -7,26 +7,34 @@
 
 import Foundation
 public extension ActivityViewData {
+    nonisolated static let dateFormatter: DateFormatter = {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        dateFormatter.timeStyle = .none
+        return dateFormatter
+    }()
+    
+    nonisolated static let dateComponentFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.unitsStyle = .abbreviated
+        return formatter
+    }()
+    
     nonisolated static func from(activity: ActivityInfoData) -> Self {
         // Distance (Meters to Miles)
         let miles = activity.distance / 1609.34
         let distanceStr = String(format: "%.1f mi", miles)
         
         // Time (Seconds to 1h 15m)
-        let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute]
-        formatter.unitsStyle = .abbreviated
-        let timeStr = formatter.string(from: TimeInterval(activity.movingTime)) ?? "0m"
+        let timeStr = Self.dateComponentFormatter.string(from: TimeInterval(activity.movingTime)) ?? "0m"
         
         // Elevation (Meters to Feet)
         let feet = activity.totalElevationGain * 3.28084
         let elevationStr = String(format: "%.0f ft", feet)
         
         // Date Formatting
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .medium
-        dateFormatter.timeStyle = .none
-        let dateStr = dateFormatter.string(from: activity.startDateLocal)
+        let dateStr = Self.dateFormatter.string(from: activity.startDateLocal)
         
         // Map Sport Type to SF Symbol
         let icon: String
