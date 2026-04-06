@@ -12,6 +12,7 @@ import ComposableArchitecture
 struct StravaClient: Sendable {
     var fetchAthlete: @Sendable () async -> Result<ProfileViewData, DataLoadingError>
     var fetchActivities: @Sendable (_ page: Int) async -> Result<[ActivityViewData], DataLoadingError>
+    var fetchSegments: @Sendable () async -> Result<[SegmentViewData], DataLoadingError>
 }
 
 extension DependencyValues {
@@ -98,16 +99,61 @@ extension StravaClient: DependencyKey {
             } catch {
                 return .failure(.badResponse(error.localizedDescription))
             }
+        },
+        fetchSegments: {
+            do {
+                // Use the Strava Segments Explore API
+                // Reference: https://developers.strava.com/docs/reference/#api-Segments-exploreSegments
+                
+                var components = URLComponents(string: "https://www.strava.com/api/v3/segments/explore")!
+                
+                // Highlands Ranch, CO Bounding Box
+                let swLat = 39.5050  // South (near Wildcat Ridge)
+                let swLng = -105.0250 // West (near Santa Fe Dr/Chatfield)
+                let neLat = 39.5750  // North (along C-470)
+                let neLng = -104.8950 // East (near Quebec St/Lone Tree)
+                
+                components.queryItems = [
+                    URLQueryItem(name: "bounds", value: "\(swLat),\(swLng),\(neLat),\(neLng)"),
+                    URLQueryItem(name: "activity_type", value: "cycling")
+                ]
+                
+                var request = URLRequest(url: components.url!)
+                
+                let token = try await validToken()
+                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+
+                let (data, response) = try await URLSession.shared.data(for: request)
+
+                guard let http = response as? HTTPURLResponse else {
+                    return .failure(DataLoadingError.badResponse("Invalid response type"))
+                }
+
+                guard http.statusCode == 200 else {
+                    return .failure(DataLoadingError.errorWithStatusCode(http.statusCode))
+                }
+
+                let segments = try await MainActor.run {
+                    let decoder = JSONDecoder()
+                    let segmentResponse = try decoder.decode(SegmentsInfo.self, from: data)
+                    return segmentResponse.segments.map { $0.toViewData() }
+                }
+                return .success(segments)
+            } catch {
+                return .failure(.badResponse(error.localizedDescription))
+            }
         }
     )
 
     public static let testValue = Self(
         fetchAthlete: { .failure(DataLoadingError.networkError) },
-        fetchActivities: { _ in .failure(DataLoadingError.networkError) }
+        fetchActivities: { _ in .failure(DataLoadingError.networkError) },
+        fetchSegments: { .failure(DataLoadingError.networkError) }
     )
 
     public static let previewValue = Self(
         fetchAthlete: { await .success(.mock) },
-        fetchActivities: { _ in await .success(ActivityViewData.createMocks()) }
+        fetchActivities: { _ in await .success(ActivityViewData.createMocks()) },
+        fetchSegments: { await .success(SegmentViewData.createMocks()) }
     )
 }

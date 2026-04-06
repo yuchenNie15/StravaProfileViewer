@@ -18,17 +18,20 @@ struct AppFeature {
         var auth = AuthFeature.State()
         var profile = Profile.State()
         var activityList = ActivityList.State()
+        var segmentExplorer = SegmentExplore.State()
         var selectedTab: Tab = .activities
     }
 
     enum Tab: String, CaseIterable {
         case activities
         case profile
-
+        case segments
+        
         var title: String {
             switch self {
             case .activities: return "Activities"
             case .profile: return "Profile"
+            case .segments: return "Segments"
             }
         }
 
@@ -36,6 +39,7 @@ struct AppFeature {
             switch self {
             case .activities: return "bicycle.circle.fill"
             case .profile: return "person.fill"
+            case .segments: return "mountain.2.fill"
             }
         }
     }
@@ -45,6 +49,7 @@ struct AppFeature {
         case auth(AuthFeature.Action)
         case profile(Profile.Action)
         case activityList(ActivityList.Action)
+        case segmentExplorer(SegmentExplore.Action)
     }
 
     var body: some Reducer<State, Action> {
@@ -59,6 +64,10 @@ struct AppFeature {
         Scope(state: \.activityList, action: \.activityList) {
             ActivityList()
         }
+        
+        Scope(state: \.segmentExplorer, action: \.segmentExplorer) {
+            SegmentExplore()
+        }
 
         Reduce { state, action in
             switch action {
@@ -70,14 +79,7 @@ struct AppFeature {
                 state.profile = Profile.State()
                 state.activityList = ActivityList.State()
                 return .none
-
-            case .auth:
-                return .none
-
-            case .profile:
-                return .none
-
-            case .activityList:
+            default:
                 return .none
             }
         }
@@ -132,6 +134,14 @@ struct AppView: View {
                 Label(AppFeature.Tab.profile.title, systemImage: AppFeature.Tab.profile.systemImage)
             }
             .tag(AppFeature.Tab.profile)
+            
+            SegmentExploreView(
+                store: store.scope(state: \.segmentExplorer, action: \.segmentExplorer)
+            )
+            .tabItem {
+                Label(AppFeature.Tab.segments.title, systemImage: AppFeature.Tab.segments.systemImage)
+            }
+            .tag(AppFeature.Tab.segments)
         }
     }
 }

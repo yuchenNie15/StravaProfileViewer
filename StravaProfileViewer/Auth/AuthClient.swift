@@ -154,9 +154,21 @@ private class AuthPresentationAnchor: NSObject, ASWebAuthenticationPresentationC
     static let shared = AuthPresentationAnchor()
 
     func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-        UIApplication.shared.connectedScenes
+        let windowScene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
-            .flatMap { $0.windows }
-            .first { $0.isKeyWindow } ?? ASPresentationAnchor()
+            .first { $0.activationState == .foregroundActive }
+        
+        if let windowScene {
+            // Use the first key window if available, otherwise create a new window with the scene
+            return windowScene.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor(windowScene: windowScene)
+        } else {
+            // Fallback: get any window scene and create a window with it
+            if let anyWindowScene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
+                return ASPresentationAnchor(windowScene: anyWindowScene)
+            } else {
+                // This should rarely happen, but we need a fallback
+                fatalError("No window scene available for authentication presentation")
+            }
+        }
     }
 }
