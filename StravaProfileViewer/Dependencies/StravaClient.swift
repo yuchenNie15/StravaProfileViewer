@@ -78,7 +78,6 @@ extension StravaClient: DependencyKey {
                     decoder.dateDecodingStrategy = .iso8601
                     return try decoder.decode(ProfileInfoData.self, from: data)
                 }
-
                 return .success(ProfileViewData.from(profile: profileInfo))
             } catch {
                 return .failure(.badResponse(error.localizedDescription))
@@ -113,7 +112,6 @@ extension StravaClient: DependencyKey {
                     decoder.dateDecodingStrategy = .iso8601
                     return try decoder.decode([ActivityInfoData].self, from: data)
                 }
-
                 return .success(activities.map { ActivityViewData.from(activity: $0) })
             } catch {
                 return .failure(.badResponse(error.localizedDescription))
