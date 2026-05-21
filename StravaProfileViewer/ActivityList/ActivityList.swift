@@ -11,12 +11,11 @@ import SwiftUI
 
 @Reducer
 struct ActivityList {
-    static let pageSize: Int = 30
+    nonisolated static let pageSize: Int = 30
     @Dependency(\.stravaClient) var stravaClient
     
     @ObservableState
     struct State: Equatable {
-        // Changed name for clarity, and removed explicit @MainActor
         var activityData: ViewDataState<IdentifiedArrayOf<ActivityViewData>> = .loading
         var canLoadNextPage: Bool = true
         var page: Int = 1

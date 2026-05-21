@@ -17,14 +17,28 @@ struct SegmentExploreView: View {
             // Map view
             segmentMapView
                 .frame(height: 300)
-            
+
             // Filter controls
             filterSection
-            
+
             // Segment list
             segmentListView
         }
         .navigationTitle("Explore Segments")
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    store.send(.useMyLocation)
+                } label: {
+                    if store.locationStatus == .requesting {
+                        ProgressView()
+                    } else {
+                        Label("Near Me", systemImage: "location.fill")
+                    }
+                }
+                .disabled(store.locationStatus == .requesting)
+            }
+        }
         .onAppear {
             store.send(.onAppear)
         }
@@ -113,13 +127,17 @@ struct SegmentExploreView: View {
         switch store.segments {
         case .loading:
             LoadingView()
-            
+
         case .error(let error):
-            ErrorView(
-                error: error,
-                retry: { store.send(.retry) }
-            )
-            
+            if store.locationStatus == .denied {
+                locationDeniedView
+            } else {
+                ErrorView(
+                    error: error,
+                    retry: { store.send(.retry) }
+                )
+            }
+
         case .dataLoaded:
             if store.filteredSegments.isEmpty {
                 emptyStateView
@@ -139,12 +157,27 @@ struct SegmentExploreView: View {
                 }
                 .listStyle(.plain)
             }
-            
+
         case .empty:
             emptyStateView
         }
     }
-    
+
+    private var locationDeniedView: some View {
+        ContentUnavailableView {
+            Label("Location Access Required", systemImage: "location.slash")
+        } description: {
+            Text("Enable location access in Settings to find segments near you.")
+        } actions: {
+            Button("Open Settings", systemImage: "gear") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+
     private var emptyStateView: some View {
         ContentUnavailableView(
             "No Segments Found",

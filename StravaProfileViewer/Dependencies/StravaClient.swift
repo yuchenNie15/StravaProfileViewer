@@ -6,13 +6,32 @@
 //
 
 import Foundation
+import CoreLocation
 import ComposableArchitecture
 
+struct SegmentBounds: Sendable, Equatable {
+    let swLat: Double
+    let swLng: Double
+    let neLat: Double
+    let neLng: Double
+
+    static func from(center: CLLocationCoordinate2D, radiusMiles: Double = 10) -> Self {
+        let radiusKm = radiusMiles * 1.60934
+        let latDelta = radiusKm / 111.11
+        let lonDelta = radiusKm / (111.11 * cos(center.latitude * .pi / 180))
+        return Self(
+            swLat: center.latitude - latDelta,
+            swLng: center.longitude - lonDelta,
+            neLat: center.latitude + latDelta,
+            neLng: center.longitude + lonDelta
+        )
+    }
+}
 
 struct StravaClient: Sendable {
     var fetchAthlete: @Sendable () async -> Result<ProfileViewData, DataLoadingError>
     var fetchActivities: @Sendable (_ page: Int) async -> Result<[ActivityViewData], DataLoadingError>
-    var fetchSegments: @Sendable () async -> Result<[SegmentViewData], DataLoadingError>
+    var fetchSegments: @Sendable (_ bounds: SegmentBounds) async -> Result<[SegmentViewData], DataLoadingError>
 }
 
 extension DependencyValues {
@@ -68,7 +87,7 @@ extension StravaClient: DependencyKey {
         fetchActivities: { page in
             do {
                 var components = URLComponents(string: "https://www.strava.com/api/v3/athlete/activities")!
-                let pageSize = await ActivityList.pageSize
+                let pageSize = ActivityList.pageSize
                 components.queryItems = [
                     URLQueryItem(name: "page", value: "\(page)"),
                     URLQueryItem(name: "per_page", value: "\(pageSize)")
@@ -100,21 +119,12 @@ extension StravaClient: DependencyKey {
                 return .failure(.badResponse(error.localizedDescription))
             }
         },
-        fetchSegments: {
+        fetchSegments: { bounds in
             do {
-                // Use the Strava Segments Explore API
-                // Reference: https://developers.strava.com/docs/reference/#api-Segments-exploreSegments
-                
                 var components = URLComponents(string: "https://www.strava.com/api/v3/segments/explore")!
-                
-                // Highlands Ranch, CO Bounding Box
-                let swLat = 39.5050  // South (near Wildcat Ridge)
-                let swLng = -105.0250 // West (near Santa Fe Dr/Chatfield)
-                let neLat = 39.5750  // North (along C-470)
-                let neLng = -104.8950 // East (near Quebec St/Lone Tree)
-                
+
                 components.queryItems = [
-                    URLQueryItem(name: "bounds", value: "\(swLat),\(swLng),\(neLat),\(neLng)"),
+                    URLQueryItem(name: "bounds", value: "\(bounds.swLat),\(bounds.swLng),\(bounds.neLat),\(bounds.neLng)"),
                     URLQueryItem(name: "activity_type", value: "cycling")
                 ]
                 
@@ -148,12 +158,12 @@ extension StravaClient: DependencyKey {
     public static let testValue = Self(
         fetchAthlete: { .failure(DataLoadingError.networkError) },
         fetchActivities: { _ in .failure(DataLoadingError.networkError) },
-        fetchSegments: { .failure(DataLoadingError.networkError) }
+        fetchSegments: { _ in .failure(DataLoadingError.networkError) }
     )
 
     public static let previewValue = Self(
         fetchAthlete: { await .success(.mock) },
         fetchActivities: { _ in await .success(ActivityViewData.createMocks()) },
-        fetchSegments: { await .success(SegmentViewData.createMocks()) }
+        fetchSegments: { _ in await .success(SegmentViewData.createMocks()) }
     )
 }

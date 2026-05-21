@@ -7,6 +7,10 @@
 
 import Foundation
 
+// KeyPath does not yet have a Sendable conformance in this SDK. swift-dependencies
+// requires KeyPath<Root, Value> & Sendable in Swift 6 mode, so we add it retroactively.
+extension KeyPath: @retroactive @unchecked Sendable {}
+
 public enum ViewDataState<T: Equatable>: Equatable {
     case loading
     case error(DataLoadingError)

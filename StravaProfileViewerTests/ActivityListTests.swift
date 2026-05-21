@@ -12,7 +12,7 @@ import ComposableArchitecture
 @MainActor
 struct ActivityListTests {
 
-    private static let mocks = ActivityViewData.createMocks()
+    nonisolated private static let mocks = ActivityViewData.createMocks()
     private static let identifiedMocks = IdentifiedArray(uniqueElements: mocks)
 
     // MARK: - onAppear

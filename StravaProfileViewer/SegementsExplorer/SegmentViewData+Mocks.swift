@@ -9,7 +9,7 @@ import Foundation
 import CoreLocation
 
 extension SegmentViewData {
-    public static func createMock(
+    public nonisolated static func createMock(
         id: Int = 20201,
         name: String = "Test Climb",
         climbCategory: ClimbCategory = .category4,
@@ -43,7 +43,7 @@ extension SegmentViewData {
 }
 
 extension SegmentViewData {
-    public static func createMocks() -> [Self] {
+    public nonisolated static func createMocks() -> [Self] {
         // All segments are in the San Francisco Peninsula / South Bay area
         // Center point approximately: 37.40°N, 122.15°W (near Palo Alto/Woodside)
         return [

@@ -9,37 +9,37 @@ import Foundation
 import Security
 
 enum TokenStore {
-    private static let accessTokenKey = "strava_access_token"
-    private static let refreshTokenKey = "strava_refresh_token"
-    private static let expiresAtKey = "strava_token_expires_at"
+    nonisolated private static let accessTokenKey = "strava_access_token"
+    nonisolated private static let refreshTokenKey = "strava_refresh_token"
+    nonisolated private static let expiresAtKey = "strava_token_expires_at"
 
-    static func save(_ response: TokenResponse) {
+    nonisolated static func save(_ response: TokenResponse) {
         set(response.accessToken, forKey: accessTokenKey)
         set(response.refreshToken, forKey: refreshTokenKey)
         set(String(response.expiresAt), forKey: expiresAtKey)
     }
 
-    static func accessToken() -> String? {
+    nonisolated static func accessToken() -> String? {
         get(forKey: accessTokenKey)
     }
 
-    static func refreshToken() -> String? {
+    nonisolated static func refreshToken() -> String? {
         get(forKey: refreshTokenKey)
     }
 
-    static func isExpired() -> Bool {
+    nonisolated static func isExpired() -> Bool {
         guard let raw = get(forKey: expiresAtKey), let expiresAt = Int(raw), expiresAt > 0 else {
             return true
         }
         return Date.now.timeIntervalSince1970 >= Double(expiresAt)
     }
 
-    static func hasValidToken() -> Bool {
+    nonisolated static func hasValidToken() -> Bool {
         guard accessToken() != nil else { return false }
         return !isExpired()
     }
 
-    static func clear() {
+    nonisolated static func clear() {
         delete(forKey: accessTokenKey)
         delete(forKey: refreshTokenKey)
         delete(forKey: expiresAtKey)
@@ -47,7 +47,7 @@ enum TokenStore {
 
     // MARK: - Keychain helpers
 
-    private static func set(_ value: String, forKey key: String) {
+    nonisolated private static func set(_ value: String, forKey key: String) {
         guard let data = value.data(using: .utf8) else { return }
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -61,7 +61,7 @@ enum TokenStore {
         }
     }
 
-    private static func get(forKey key: String) -> String? {
+    nonisolated private static func get(forKey key: String) -> String? {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: key,
@@ -76,7 +76,7 @@ enum TokenStore {
         return string
     }
 
-    private static func delete(forKey key: String) {
+    nonisolated private static func delete(forKey key: String) {
         let query: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
             kSecAttrAccount: key,

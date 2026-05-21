@@ -1,7 +1,7 @@
 # StravaProfileViewer — Claude Instructions
 
 ## Project Overview
-iOS SwiftUI app built with The Composable Architecture (TCA) that displays a Strava athlete's profile and activity feed.
+iOS SwiftUI app built with The Composable Architecture (TCA) that displays a Strava athlete's profile and activity feed. Targeted towards athletes who want to view their Strava data natively on iOS.
 
 ## Architecture
 

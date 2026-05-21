@@ -7,7 +7,7 @@
 
 import Foundation
 extension ActivityViewData {
-    public static func createMock(
+    public nonisolated static func createMock(
         id: Int = 10101,
         title: String = "Morning Ride",
         dateAndType: String = "Ride • Feb 27, 2026",
@@ -37,7 +37,7 @@ extension ActivityViewData {
 }
 
 extension ActivityViewData {
-    public static func createMocks() -> [Self] {
+    public nonisolated static func createMocks() -> [Self] {
         return [
             .createMock(
                 id: 10101,

@@ -8,7 +8,7 @@
 import Foundation
 import Tagged
 extension ProfileViewData.GearRowData {
-    static func createMock(
+    nonisolated static func createMock(
         id: String = "g12345678987655",
         name: String = "Default Gear",
         isPrimary: Bool = true,
@@ -21,15 +21,15 @@ extension ProfileViewData.GearRowData {
             distanceDisplay: distanceDisplay
         )
     }
-    
-    static let mockBike = createMock(
+
+    nonisolated static let mockBike = createMock(
         id: "b12345678987655",
         name: "EMC",
         isPrimary: true,
         distanceDisplay: "0 mi"
     )
-    
-    static let mockShoe = createMock(
+
+    nonisolated static let mockShoe = createMock(
         id: "g12345678987655",
         name: "adidas",
         isPrimary: true,
@@ -38,7 +38,7 @@ extension ProfileViewData.GearRowData {
 }
 
 extension ProfileViewData {
-    static func createMock(
+    nonisolated static func createMock(
         fullName: String = "Marianne Teutenberg",
         location: String = "San Francisco, CA",
         profileImageURL: URL? = URL(string: "https://example.cloudfront.net/pictures/athletes/123456789/123456789/2/large.jpg"),
@@ -59,6 +59,6 @@ extension ProfileViewData {
             shoes: shoes
         )
     }
-    
-    static let mock = createMock()
+
+    nonisolated static let mock = createMock()
 }
