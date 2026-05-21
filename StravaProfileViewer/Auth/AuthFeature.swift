@@ -52,7 +52,7 @@ struct AuthFeature {
                         try await authClient.authenticate()
                         await send(.authCompleted)
                     } catch {
-                        await send(.authFailed(error.asDataLoaderError))
+                        await send(.authFailed(error.asDataLoadingError))
                     }
                 }
 

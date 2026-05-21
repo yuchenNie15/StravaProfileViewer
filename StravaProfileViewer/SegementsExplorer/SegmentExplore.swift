@@ -38,6 +38,7 @@ struct SegmentExplore {
             case idle
             case requesting
             case denied
+            case failed
         }
 
         init(
@@ -132,7 +133,11 @@ struct SegmentExplore {
                 return fetchSegments(bounds)
 
             case .locationResponse(.failure(let error)):
-                state.locationStatus = .denied
+                if case .unknown = error {
+                    state.locationStatus = .denied
+                } else {
+                    state.locationStatus = .failed
+                }
                 state.segments = .error(error)
                 return .none
 

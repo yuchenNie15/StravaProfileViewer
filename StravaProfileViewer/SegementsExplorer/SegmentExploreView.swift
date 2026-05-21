@@ -11,17 +11,14 @@ import MapKit
 
 struct SegmentExploreView: View {
     @Bindable var store: StoreOf<SegmentExplore>
-    
+
     var body: some View {
         VStack(spacing: 0) {
-            // Map view
             segmentMapView
                 .frame(height: 300)
 
-            // Filter controls
             filterSection
 
-            // Segment list
             segmentListView
         }
         .navigationTitle("Explore Segments")
@@ -43,7 +40,7 @@ struct SegmentExploreView: View {
             store.send(.onAppear)
         }
     }
-    
+
     private var segmentMapView: some View {
         Map(
             position: .constant(.region(store.mapRegion)),
@@ -64,22 +61,20 @@ struct SegmentExploreView: View {
                     )
                 }
                 .tag(segment.id)
-                
-                // Draw the full route using the polyline
+
                 MapPolyline(coordinates: segment.polyline)
                     .stroke(
-                        climbCategoryColor(for: segment.climbCategory),
+                        segment.climbCategory.color,
                         lineWidth: store.selectedSegmentId == segment.id ? 5 : 3
                     )
             }
         }
         .mapStyle(.standard(elevation: .realistic))
     }
-    
+
     private var filterSection: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 12) {
-                // Starred filter
                 FilterButton(
                     title: "Starred",
                     systemImage: "star.fill",
@@ -87,11 +82,10 @@ struct SegmentExploreView: View {
                 ) {
                     store.send(.toggleStarredFilter)
                 }
-                
+
                 Divider()
                     .frame(height: 20)
-                
-                // Climb category filters
+
                 ForEach([
                     SegmentViewData.ClimbCategory.hc,
                     .category1,
@@ -107,7 +101,7 @@ struct SegmentExploreView: View {
                         store.send(.toggleClimbCategoryFilter(category))
                     }
                 }
-                
+
                 if store.filterStarredOnly || !store.filterClimbCategories.isEmpty {
                     Button("Clear", systemImage: "xmark.circle.fill") {
                         store.send(.clearFilters)
@@ -121,7 +115,7 @@ struct SegmentExploreView: View {
         }
         .background(Color(.systemGroupedBackground))
     }
-    
+
     @ViewBuilder
     private var segmentListView: some View {
         switch store.segments {
@@ -185,17 +179,6 @@ struct SegmentExploreView: View {
             description: Text("Try adjusting your filters or check back later")
         )
     }
-    
-    private func climbCategoryColor(for category: SegmentViewData.ClimbCategory) -> Color {
-        switch category {
-        case .hc: return .red
-        case .category1: return .orange
-        case .category2: return .yellow
-        case .category3: return .green
-        case .category4: return .blue
-        case .none: return .gray
-        }
-    }
 }
 
 // MARK: - Supporting Views
@@ -203,14 +186,14 @@ struct SegmentExploreView: View {
 struct SegmentAnnotationView: View {
     let segment: SegmentViewData
     let isSelected: Bool
-    
+
     var body: some View {
         ZStack {
             Circle()
-                .fill(categoryColor)
+                .fill(segment.climbCategory.color)
                 .frame(width: isSelected ? 24 : 16, height: isSelected ? 24 : 16)
                 .shadow(radius: isSelected ? 4 : 2)
-            
+
             if segment.starred {
                 Image(systemName: "star.fill")
                     .font(.system(size: isSelected ? 10 : 8))
@@ -219,30 +202,18 @@ struct SegmentAnnotationView: View {
         }
         .animation(.easeInOut(duration: 0.2), value: isSelected)
     }
-    
-    private var categoryColor: Color {
-        switch segment.climbCategory {
-        case .hc: return .red
-        case .category1: return .orange
-        case .category2: return .yellow
-        case .category3: return .green
-        case .category4: return .blue
-        case .none: return .gray
-        }
-    }
 }
 
 struct SegmentRowView: View {
     let segment: SegmentViewData
-    
+
     var body: some View {
         HStack(spacing: 12) {
-            // Climb category indicator
             VStack {
                 Image(systemName: "mountain.2.fill")
                     .font(.title2)
-                    .foregroundStyle(categoryColor)
-                
+                    .foregroundStyle(segment.climbCategory.color)
+
                 if !segment.climbCategory.shortName.isEmpty {
                     Text(segment.climbCategory.shortName)
                         .font(.caption2)
@@ -251,19 +222,19 @@ struct SegmentRowView: View {
                 }
             }
             .frame(width: 50)
-            
+
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
                     Text(segment.name)
                         .font(.headline)
-                    
+
                     if segment.starred {
                         Image(systemName: "star.fill")
                             .font(.caption)
                             .foregroundStyle(.yellow)
                     }
                 }
-                
+
                 HStack(spacing: 12) {
                     Label(segment.distanceText, systemImage: "ruler")
                     Label(segment.elevationText, systemImage: "arrow.up")
@@ -272,21 +243,10 @@ struct SegmentRowView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             }
-            
+
             Spacer()
         }
         .padding(.vertical, 4)
-    }
-    
-    private var categoryColor: Color {
-        switch segment.climbCategory {
-        case .hc: return .red
-        case .category1: return .orange
-        case .category2: return .yellow
-        case .category3: return .green
-        case .category4: return .blue
-        case .none: return .gray
-        }
     }
 }
 
@@ -295,7 +255,7 @@ struct FilterButton: View {
     let systemImage: String
     let isSelected: Bool
     let action: () -> Void
-    
+
     var body: some View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
@@ -323,7 +283,7 @@ struct LoadingView: View {
 struct ErrorView: View {
     let error: DataLoadingError
     let retry: () -> Void
-    
+
     var body: some View {
         ContentUnavailableView {
             Label("Failed to Load", systemImage: "exclamationmark.triangle")

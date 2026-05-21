@@ -46,7 +46,8 @@ final class LocationManagerHelper: NSObject, CLLocationManagerDelegate {
     }
 
     func requestLocation() async -> Result<CLLocationCoordinate2D, DataLoadingError> {
-        await withCheckedContinuation { continuation in
+        guard continuation == nil else { return .failure(.unknown("Location request already in progress.")) }
+        return await withCheckedContinuation { continuation in
             self.continuation = continuation
             switch clManager.authorizationStatus {
             case .authorizedWhenInUse, .authorizedAlways:

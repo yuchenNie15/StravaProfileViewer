@@ -129,7 +129,7 @@ struct ActivityListView: View {
                     EmptyView()
                 }
             }
-            .navigationTitle("Profile")
+            .navigationTitle("Activities")
         }
         .task { store.send(.onAppear) }
     }
@@ -153,7 +153,7 @@ struct ActivityListView: View {
             }
         }
         .refreshable {
-            store.send(.retry)
+            await store.send(.retry).finish()
         }
         .listStyle(.plain)
         .navigationTitle("Activities")

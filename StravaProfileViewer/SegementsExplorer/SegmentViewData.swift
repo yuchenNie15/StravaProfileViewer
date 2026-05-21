@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import SwiftUI
 
 struct SegmentViewData: Identifiable, Equatable, Sendable {
     let id: Int
@@ -71,6 +72,17 @@ struct SegmentViewData: Identifiable, Equatable, Sendable {
             case .category2: return "Cat 2"
             case .category1: return "Cat 1"
             case .hc: return "HC"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .hc: return .red
+            case .category1: return .orange
+            case .category2: return .yellow
+            case .category3: return .green
+            case .category4: return .blue
+            case .none: return .gray
             }
         }
     }

@@ -57,7 +57,7 @@ public enum DataLoadingError: Error, Equatable, LocalizedError, Sendable {
 }
 
 public extension Error {
-    var asDataLoaderError: DataLoadingError {
+    var asDataLoadingError: DataLoadingError {
         // If it's already a DataLoadingError, just return it
         if let dataError = self as? DataLoadingError {
             return dataError

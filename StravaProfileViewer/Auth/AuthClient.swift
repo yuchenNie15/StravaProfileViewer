@@ -12,7 +12,6 @@ import Foundation
 @DependencyClient
 struct AuthClient: Sendable {
     var authenticate: @Sendable () async throws -> Void
-    var refreshIfNeeded: @Sendable () async throws -> Void
     var logout: @Sendable () async -> Void
     var isAuthenticated: @Sendable () -> Bool = { false }
 }
@@ -57,11 +56,6 @@ extension AuthClient: DependencyKey {
             let response = try await exchangeCode(code)
             TokenStore.save(response)
         },
-        refreshIfNeeded: {
-            guard TokenStore.isExpired(), let refreshToken = TokenStore.refreshToken() else { return }
-            let response = try await refreshAccessToken(refreshToken)
-            TokenStore.save(response)
-        },
         logout: {
             TokenStore.clear()
         },
@@ -72,14 +66,12 @@ extension AuthClient: DependencyKey {
 
     static let testValue = Self(
         authenticate: {},
-        refreshIfNeeded: {},
         logout: {},
         isAuthenticated: { false }
     )
 
     static let previewValue = Self(
         authenticate: {},
-        refreshIfNeeded: {},
         logout: {},
         isAuthenticated: { true }
     )
@@ -157,16 +149,13 @@ private class AuthPresentationAnchor: NSObject, ASWebAuthenticationPresentationC
         let windowScene = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .first { $0.activationState == .foregroundActive }
-        
+
         if let windowScene {
-            // Use the first key window if available, otherwise create a new window with the scene
             return windowScene.windows.first { $0.isKeyWindow } ?? ASPresentationAnchor(windowScene: windowScene)
         } else {
-            // Fallback: get any window scene and create a window with it
             if let anyWindowScene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first {
                 return ASPresentationAnchor(windowScene: anyWindowScene)
             } else {
-                // This should rarely happen, but we need a fallback
                 fatalError("No window scene available for authentication presentation")
             }
         }
