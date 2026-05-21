@@ -65,3 +65,5 @@ fastlane/test_output
 
 # Bundler
 vendor/bundle/
+StravaProfileViewer/Auth/StravaClientID.swift
+StravaProfileViewer/Dependencies/StravaAccessToken.swift
